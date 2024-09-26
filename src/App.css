@@ -1,38 +1,122 @@
-.App {
-  text-align: center;
+.wrapper {
+
+    overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header {
+    width: 100vw;
+    background-color: #add8e6;
+    color: #fff;
+    padding: 1.8rem 4rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.home-link {
+    color: #fff;
+    font-size: 2.4rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.logo {
+    font-size: 2.4rem;
+    font-weight: 900;
+    width: 100%;
+    text-align: center;
 }
 
-.App-link {
-  color: #61dafb;
+.body {
+    background: linear-gradient(to right, #87CEFA, #ADD8E6);
+    font-family: Arial, sans-serif;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem 4rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.body-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 2.4rem;
+    margin-bottom: 4rem;
+}
+
+.location-list {
+    display: flex;
+    gap: 2%;
+}
+
+.location-item {
+    width: 20%;
+    padding: 2rem 1rem;
+    background-color: #fff;
+    border-radius: 0.8rem;
+    cursor: pointer;
+}
+
+.location-item-img {
+    width: 100%;
+    height: 20rem;
+    border-radius: 0.6rem;
+}
+
+.location-item-body {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+}
+
+.location-item-name {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.location-item-desc {
+    display: flex;
+    flex-direction: column;
+}
+
+.location-item-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.location-item-content {
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 2.4rem;
+}
+
+.location-item-review {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.star-icon {
+    color: #FFD700;
+    margin: 0 0.2rem;
+}
+
+.btn-wrapper {
+    margin-top: 5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-send {
+    padding: 1rem 2rem;
+    outline: none;
+    border: none;
+    border-radius: 0.6rem;
+    background-color: #2f82ce;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-send:hover {
+    opacity: 0.9;
 }
