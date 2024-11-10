@@ -177,15 +177,22 @@ const Home = () => {
     setDataDetail(data);
   };
 
-  const handleActiveItem = (index) => {
-    if (activeItem.includes(index)) {
-      setActiveItem(activeItem.filter((item) => item !== index));
-    } else {
-      setActiveItem([...activeItem, index]);
-    }
+  const handleActiveItem = (data) => {
+    setActiveItem((prevActiveItem) => {
+      const isItemActive = prevActiveItem.some(
+        (item) => item.name === data.name
+      );
+
+      if (isItemActive) {
+        return prevActiveItem.filter((item) => item.name !== data.name);
+      } else {
+        return [...prevActiveItem, data];
+      }
+    });
   };
 
   const handleSearch = () => {
+    localStorage.setItem("activeItem", JSON.stringify(activeItem));
     window.open("/map", "_blank");
   };
 
@@ -207,7 +214,9 @@ const Home = () => {
           <div
             className={cx(
               "location-item",
-              activeItem.includes(index) ? "active-item" : ""
+              activeItem.some((active) => active.name === item.name)
+                ? "active-item"
+                : ""
             )}
             key={index}
           >
@@ -322,7 +331,7 @@ const Home = () => {
               </button>
               <button
                 className={cx("location-choose-btn")}
-                onClick={() => handleActiveItem(index)}
+                onClick={() => handleActiveItem(item)}
               >
                 Chọn
               </button>
@@ -339,7 +348,7 @@ const Home = () => {
           />
         </button>
       </div>
-      <DetailModal 
+      <DetailModal
         show={showDetail}
         onHide={() => setShowDetail(false)}
         dataDetail={dataDetail}
