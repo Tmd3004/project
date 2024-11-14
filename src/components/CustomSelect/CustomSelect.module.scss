@@ -1,6 +1,6 @@
 .custom-select-wrapper {
     position: relative;
-    min-width: 18rem;
+    min-width: 20rem;
     margin-right: 0.4rem;
 }
 
@@ -8,7 +8,7 @@
     padding: 1rem 3rem 1rem 1rem;
     border: 0.2rem solid #ebebeb;
     border-radius: 0.4rem;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
@@ -36,8 +36,9 @@
     background-color: #fff;
     z-index: 10;
     width: 100%;
+    height: 30rem;
     max-height: 60rem;
-    overflow: scroll;
+    overflow-y: scroll;
     transform: translateX(-50%);
 }
 
