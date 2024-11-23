@@ -5,6 +5,7 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import MapComponent from "./components/MapComponent/MapComponent";
+import MapPointing from "./components/MapPointing/MapPointing";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<MapComponent />} />
+          <Route path="/map-point" element={<MapPointing />} />
         </Routes>
       </div>
     </div>

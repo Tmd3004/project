@@ -11,18 +11,7 @@ import { IoLink } from "react-icons/io5";
 
 const cx = classNames.bind(Styles);
 
-const locations = [
-  "Tất cả",
-  "Hải Châu",
-  "Thanh Khê",
-  "Sơn Trà",
-  "Ngũ Hành Sơn",
-  "Cẩm Lệ",
-  "Liên Chiểu",
-  "Hòa Vang",
-  "Hoàng Sa",
-  "Khác",
-];
+const radiuses = [100, 500, 1000, 2000];
 
 const data = [
   {
@@ -34,7 +23,7 @@ const data = [
     rate: 8.7,
     overall_review: "Tuyệt vời",
     address: "136-138-140 Phan Chu Trinh, Đà Nẵng, Việt Nam",
-    // latlng: "16.06383343,108.21981668",
+    latlng: "16.06383343,108.21981668",
     type: "hotel",
     id: 1446,
     created_at: "2024-11-10T18:16:08",
@@ -328,6 +317,28 @@ const DetailModal = ({ show, onHide, dataDetail }) => {
   );
 };
 
+function deg2rad(degrees) {
+  var pi = Math.PI;
+
+  return degrees * (pi / 180);
+}
+
+const haversineDistance = (coord1, coord2) => {
+  const R = 6371000;
+  const dLat = deg2rad(coord2.lat - coord1.lat);
+  const dLng = deg2rad(coord2.lng - coord1.lng);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(coord1.lat)) *
+      Math.cos(deg2rad(coord2.lat)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 const Home = () => {
   const [searchHotelValue, setSearchHotelValue] = useState([]);
   const [searchRestaurantValue, setSearchRestaurantValue] = useState([]);
@@ -336,37 +347,60 @@ const Home = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [activeItem, setActiveItem] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [locationsSearch, setLocationSearch] = useState([]);
+  const [locationOrigin, setLocationOrigin] = useState({ lat: 0, lng: 0 });
+  const [radius, setRadius] = useState(100);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleChangeSearch = (e) => {
+    const result = e.target.value;
+    if (result.trim().length > 0) {
+      setSearchValue(e.target.value);
+      const searchData = data.filter((item) =>
+        item.title.toLowerCase().includes(result.toLowerCase())
+      );
+      setLocationSearch(searchData);
+      setIsOpen(true);
+    } else {
+      setSearchValue("");
+      setIsSubmit(false);
+      setIsOpen(false)
+    }
+  };
+
+  const handleClickOption = (data) => {
+    setLocationSearch([]);
+    setSearchValue(data.title);
+    const [lat, lng] = data.latlng.split(",").map(Number);
+    setLocationOrigin({ lat: lat, lng: lng });
+    setIsOpen(false);
+  };
 
   const dataHotels = data.filter((item) => item.type === "hotel");
   const dataRestaurants = data.filter((item) => item.type === "restaurant");
   const dataTravels = data.filter((item) => item.type === "travel");
 
-  const handleChangeLocation = (location) => {
-    let searchData;
-    if (location === "Tất cả") {
-      searchData = data;
-    } else if (location === "Khác") {
-      searchData = data.filter(
-        (item) =>
-          !locations.some(
-            (value) =>
-              value !== "Tất cả" &&
-              value !== "Khác" &&
-              item.address.includes(value)
-          )
-      );
-    } else {
-      searchData = data.filter((item) => item.address.includes(location));
-    }
-    const hotelData = searchData.filter((item) => item.type === "hotel");
-    const restaurantData = searchData.filter(
+  const handleChangeLocation = () => {
+    const nearbyPlaces = data.filter((place) => {
+      if (!place.latlng) return false;
+      const [lat, lng] = place.latlng.split(",").map(Number);
+      const distance = haversineDistance(locationOrigin, { lat, lng });
+      return distance <= radius;
+    });
+
+    const hotelData = nearbyPlaces.filter((item) => item.type === "hotel");
+    const restaurantData = nearbyPlaces.filter(
       (item) => item.type === "restaurant"
     );
-    const travelData = searchData.filter((item) => item.type === "travel");
+    const travelData = nearbyPlaces.filter((item) => item.type === "travel");
     setSearchHotelValue(hotelData);
     setSearchRestaurantValue(restaurantData);
     setSearchTravelValue(travelData);
     setIsSubmit(true);
+
+    localStorage.setItem("dataPoints", JSON.stringify(nearbyPlaces));
+    window.open("/map-point", "_blank");
   };
 
   // Pagination Hotel
@@ -375,9 +409,7 @@ const Home = () => {
   const startHotelIndex = currentHotelPage * recordsHotelPerPage;
   const endHotelIndex = Math.min(
     startHotelIndex + recordsHotelPerPage,
-    isSubmit
-      ? searchHotelValue.length
-      : dataHotels.length
+    isSubmit ? searchHotelValue.length : dataHotels.length
   );
   const recordsHotel = isSubmit
     ? searchHotelValue.slice(startHotelIndex, endHotelIndex)
@@ -396,20 +428,14 @@ const Home = () => {
   const startRestaurantIndex = currentRestaurantPage * recordsRestaurantPerPage;
   const endRestaurantIndex = Math.min(
     startRestaurantIndex + recordsRestaurantPerPage,
-    isSubmit
-      ? searchRestaurantValue.length
-      : dataRestaurants.length
+    isSubmit ? searchRestaurantValue.length : dataRestaurants.length
   );
   const recordsRestaurant = isSubmit
     ? searchRestaurantValue.slice(startRestaurantIndex, endRestaurantIndex)
-    : dataRestaurants
-        .slice(startRestaurantIndex, endRestaurantIndex);
+    : dataRestaurants.slice(startRestaurantIndex, endRestaurantIndex);
   const npageRestaurant = isSubmit
     ? Math.ceil(searchRestaurantValue.length / recordsRestaurantPerPage)
-    : Math.ceil(
-        dataRestaurants.length /
-          recordsRestaurantPerPage
-      );
+    : Math.ceil(dataRestaurants.length / recordsRestaurantPerPage);
 
   const handlePageRestaurantClick = (data) => {
     setCurrentRestaurantPage(data.selected);
@@ -421,20 +447,14 @@ const Home = () => {
   const startTravelIndex = currentTravelPage * recordsTravelPerPage;
   const endTravelIndex = Math.min(
     startTravelIndex + recordsTravelPerPage,
-    isSubmit
-      ? searchTravelValue.length
-      : dataTravels.length
+    isSubmit ? searchTravelValue.length : dataTravels.length
   );
   const recordsTravel = isSubmit
     ? searchTravelValue.slice(startTravelIndex, endTravelIndex)
-    : dataTravels
-        .slice(startTravelIndex, endTravelIndex);
+    : dataTravels.slice(startTravelIndex, endTravelIndex);
   const npageTravel = isSubmit
     ? Math.ceil(searchTravelValue.length / recordsTravelPerPage)
-    : Math.ceil(
-        dataTravels.length /
-          recordsTravelPerPage
-      );
+    : Math.ceil(dataTravels.length / recordsTravelPerPage);
 
   const handlePageTravelClick = (data) => {
     setCurrentTravelPage(data.selected);
@@ -471,11 +491,39 @@ const Home = () => {
       </h3>
       <div className={cx("select")}>
         <span className={cx("select-title")}>Lựa chọn khu vực</span>
+        <div className={cx("search-wrapper")}>
+          <input
+            type="search"
+            placeholder="Tìm kiếm khu vực"
+            className={cx("search-input")}
+            value={searchValue}
+            onChange={handleChangeSearch}
+          />
+          {isOpen ? (
+            <div className={cx("search-options")}>
+              {locationsSearch.map((item, index) => (
+                <div
+                  key={index}
+                  className={cx("search-option")}
+                  onClick={() => handleClickOption(item)}
+                >
+                  {item.title}
+                </div>
+              ))}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <span className={cx("select-title")}>Lựa chọn bán kính (m)</span>
         <CustomSelect
-          options={locations}
-          onChange={(option) => handleChangeLocation(option)}
-          placeHolder="Lựa chọn khu vực"
+          options={radiuses}
+          onChange={(option) => setRadius(option)}
+          placeHolder={radius}
         />
+        <button className={cx("btn-search")} onClick={handleChangeLocation}>
+          Tìm kiếm địa chỉ
+        </button>
       </div>
 
       <div className={cx("location-list-display")}>
