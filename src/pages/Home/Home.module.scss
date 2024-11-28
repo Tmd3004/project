@@ -12,6 +12,25 @@
     margin-bottom: 4rem;
 }
 
+.filter {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-btn {
+    padding: 1rem;
+    width: 20rem;
+    border-radius: 1rem;
+    outline: none;
+    background-color: #2f82ce;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border: none;
+    margin: 1.5rem 0;
+    cursor: pointer;
+}
+
 .location-list {
     display: flex;
     gap: 2%;
@@ -164,7 +183,6 @@
 
 .select {
     display: flex;
-    margin-bottom: 2rem;
     align-items: center;
 }
 
@@ -173,6 +191,14 @@
     font-weight: 600;
     color: #fff;
     margin-right: 2rem;
+}
+
+.notify {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    font-style: italic;
 }
 
 .modal {
@@ -335,7 +361,7 @@
 
 .search-wrapper {
     position: relative;
-    margin-right: 4rem;
+    margin-right: 2rem;
 }
 
 .search-options {

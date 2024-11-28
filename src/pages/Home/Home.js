@@ -13,6 +13,20 @@ const cx = classNames.bind(Styles);
 
 const radiuses = [100, 500, 1000, 2000];
 
+const types = ["Hotel", "Restaurant", "Travel"];
+
+const locations = [
+  "Hải Châu",
+  "Thanh Khê",
+  "Sơn Trà",
+  "Ngũ Hành Sơn",
+  "Cẩm Lệ",
+  "Liên Chiểu",
+  "Hòa Vang",
+  "Hoàng Sa",
+  "Khác",
+];
+
 const data = [
   {
     title:
@@ -335,7 +349,7 @@ const haversineDistance = (coord1, coord2) => {
       Math.sin(dLng / 2) *
       Math.sin(dLng / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c = 2 * Math.asin(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
@@ -348,10 +362,14 @@ const Home = () => {
   const [dataDetail, setDataDetail] = useState({});
   const [activeItem, setActiveItem] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [location, setLocation] = useState("");
   const [locationsSearch, setLocationSearch] = useState([]);
   const [locationOrigin, setLocationOrigin] = useState({ lat: 0, lng: 0 });
   const [radius, setRadius] = useState(100);
+  const [type, setType] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenFilterLocation, setIsOpenFilterLocation] = useState(false);
+  const [isOpenFilterDistrict, setIsOpenFilterDistrict] = useState(false);
 
   const handleChangeSearch = (e) => {
     const result = e.target.value;
@@ -365,7 +383,7 @@ const Home = () => {
     } else {
       setSearchValue("");
       setIsSubmit(false);
-      setIsOpen(false)
+      setIsOpen(false);
     }
   };
 
@@ -386,7 +404,12 @@ const Home = () => {
       if (!place.latlng) return false;
       const [lat, lng] = place.latlng.split(",").map(Number);
       const distance = haversineDistance(locationOrigin, { lat, lng });
-      return distance <= radius;
+
+      const typeFilter = type
+        ? place.type.toLocaleLowerCase().includes(type.toLocaleLowerCase())
+        : "all";
+
+      return distance <= radius && typeFilter;
     });
 
     const hotelData = nearbyPlaces.filter((item) => item.type === "hotel");
@@ -401,6 +424,38 @@ const Home = () => {
 
     localStorage.setItem("dataPoints", JSON.stringify(nearbyPlaces));
     window.open("/map-point", "_blank");
+  };
+
+  const handleChangeDistrict = () => {
+    const searchData = data.filter((item) => {
+      const locationFilter =
+        location === "Khác"
+          ? !locations.some(
+              (value) => value !== "Khác" && item.address.includes(value)
+            )
+          : location === ""
+          ? "all"
+          : item.address.includes(location);
+      const typeFilter = type
+        ? item.type.toLowerCase().includes(type.toLowerCase())
+        : "all";
+      return locationFilter && typeFilter;
+    });
+    const hotelData = searchData.filter((item) => item.type === "hotel");
+    const restaurantData = searchData.filter(
+      (item) => item.type === "restaurant"
+    );
+    const travelData = searchData.filter((item) => item.type === "travel");
+    setSearchHotelValue(hotelData);
+    setSearchRestaurantValue(restaurantData);
+    setSearchTravelValue(travelData);
+    setIsSubmit(true);
+
+    localStorage.setItem("dataPoints", JSON.stringify(searchData));
+
+    if (searchData.length > 0) {
+      window.open("/map-point", "_blank");
+    }
   };
 
   // Pagination Hotel
@@ -489,41 +544,91 @@ const Home = () => {
       <h3 className={cx("body-title")}>
         Gợi ý các địa điểm bạn có thể lựa chọn
       </h3>
-      <div className={cx("select")}>
-        <span className={cx("select-title")}>Lựa chọn khu vực</span>
-        <div className={cx("search-wrapper")}>
-          <input
-            type="search"
-            placeholder="Tìm kiếm khu vực"
-            className={cx("search-input")}
-            value={searchValue}
-            onChange={handleChangeSearch}
-          />
-          {isOpen ? (
-            <div className={cx("search-options")}>
-              {locationsSearch.map((item, index) => (
-                <div
-                  key={index}
-                  className={cx("search-option")}
-                  onClick={() => handleClickOption(item)}
-                >
-                  {item.title}
+
+      <div className={cx("filter")}>
+        {isOpenFilterLocation ? (
+          <div className={cx("select")}>
+            <span className={cx("select-title")}>Khu vực</span>
+            <div className={cx("search-wrapper")}>
+              <input
+                type="search"
+                placeholder="Khu vực"
+                className={cx("search-input")}
+                value={searchValue}
+                onChange={handleChangeSearch}
+              />
+              {isOpen ? (
+                <div className={cx("search-options")}>
+                  {locationsSearch.map((item, index) => (
+                    <div
+                      key={index}
+                      className={cx("search-option")}
+                      onClick={() => handleClickOption(item)}
+                    >
+                      {item.title}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                ""
+              )}
             </div>
-          ) : (
-            ""
-          )}
-        </div>
-        <span className={cx("select-title")}>Lựa chọn bán kính (m)</span>
-        <CustomSelect
-          options={radiuses}
-          onChange={(option) => setRadius(option)}
-          placeHolder={radius}
-        />
-        <button className={cx("btn-search")} onClick={handleChangeLocation}>
-          Tìm kiếm địa chỉ
-        </button>
+            <span className={cx("select-title")}>Bán kính (m)</span>
+            <CustomSelect
+              options={radiuses}
+              onChange={(option) => setRadius(option)}
+              placeHolder="Bán kính"
+            />
+            <span className={cx("select-title")}>Địa điểm</span>
+            <CustomSelect
+              options={types}
+              onChange={(option) => setType(option)}
+              placeHolder="Địa điểm"
+            />
+            <button className={cx("btn-search")} onClick={handleChangeLocation}>
+              Tìm kiếm địa chỉ
+            </button>
+          </div>
+        ) : (
+          <button
+            className={cx("filter-btn")}
+            onClick={() => {
+              setIsOpenFilterLocation(true);
+              setIsOpenFilterDistrict(false);
+            }}
+          >
+            Tìm kiếm theo khu vực
+          </button>
+        )}
+        {isOpenFilterDistrict ? (
+          <div className={cx("select")}>
+            <span className={cx("select-title")}>Quận/huyện</span>
+            <CustomSelect
+              options={locations}
+              onChange={(option) => setLocation(option)}
+              placeHolder="Quận/huyện"
+            />
+            <span className={cx("select-title")}>Địa điểm</span>
+            <CustomSelect
+              options={types}
+              onChange={(option) => setType(option)}
+              placeHolder="Địa điểm"
+            />
+            <button className={cx("btn-search")} onClick={handleChangeDistrict}>
+              Tìm kiếm địa chỉ
+            </button>
+          </div>
+        ) : (
+          <button
+            className={cx("filter-btn")}
+            onClick={() => {
+              setIsOpenFilterLocation(false);
+              setIsOpenFilterDistrict(true);
+            }}
+          >
+            Tìm kiếm theo quận
+          </button>
+        )}
       </div>
 
       <div className={cx("location-list-display")}>
@@ -534,6 +639,7 @@ const Home = () => {
           currentPage={currentHotelPage}
         />
       </div>
+      {recordsHotel.length > 0 ? (
       <div className={cx("location-list")}>
         {recordsHotel.map((item, index) => (
           <div
@@ -591,6 +697,10 @@ const Home = () => {
         ))}
       </div>
 
+      ) : (
+        <span className={cx("notify")}>Không có địa chỉ nằm trong khu vực tìm kiếm</span>
+      )}
+
       <div className={cx("location-list-display")}>
         <span className={cx("location-list-title")}>Địa điểm ăn uống</span>
         <Paginate
@@ -599,6 +709,7 @@ const Home = () => {
           currentPage={currentRestaurantPage}
         />
       </div>
+      {recordsRestaurant.length > 0 ? (
       <div className={cx("location-list")}>
         {recordsRestaurant.map((item, index) => (
           <div
@@ -656,6 +767,10 @@ const Home = () => {
         ))}
       </div>
 
+      ) : (
+        <span className={cx("notify")}>Không có địa chỉ nằm trong khu vực tìm kiếm</span>
+      )}
+
       <div className={cx("location-list-display")}>
         <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
         <Paginate
@@ -664,6 +779,7 @@ const Home = () => {
           currentPage={currentTravelPage}
         />
       </div>
+      {recordsTravel.length > 0 ? (
       <div className={cx("location-list")}>
         {recordsTravel.map((item, index) => (
           <div
@@ -720,6 +836,8 @@ const Home = () => {
           </div>
         ))}
       </div>
+
+      ) : (<span className={cx("notify")}>Không có địa chỉ nằm trong khu vực tìm kiếm</span>)}
 
       <div className={cx("btn-wrapper")}>
         <button className={cx("btn-send")} onClick={handleSearch}>
