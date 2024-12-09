@@ -18,9 +18,9 @@ const App = () => {
       </div>
       <div className="body">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/map" element={<MapComponent />} />
-          <Route path="/map-point" element={<MapPointing />} />
+          <Route path="/travel" element={<Home />} />
+          <Route path="/travel/map" element={<MapComponent />} />
+          <Route path="/travel/map-point" element={<MapPointing />} />
         </Routes>
       </div>
     </div>
