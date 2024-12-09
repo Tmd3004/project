@@ -14,7 +14,7 @@ const App = () => {
         <a href="/" className="home-link">
           <FontAwesomeIcon icon={faHouse} className="home-btn" />
         </a>
-        <span className="logo">HY</span>
+        <span className="logo">Travel Maps</span>
       </div>
       <div className="body">
         <Routes>

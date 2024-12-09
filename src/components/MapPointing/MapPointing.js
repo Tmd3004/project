@@ -5,13 +5,11 @@ import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import classNames from "classnames/bind";
 import Styles from "./MapPointing.module.scss";
-import axios from "axios";
 
 const cx = classNames.bind(Styles);
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoidG1kdWMiLCJhIjoiY20zOHdxbGV0MHB4cDJsczU0cGRmNTNxbCJ9.oZhLOU3RCPxrC5md6PgIuA";
-const apiKey = "rszoRtOE3Bm3ihRyvOY4ycp2tG22VvhgL9ki5Yu3mZM";
 
 const MapPointing = () => {
   const mapContainerRef = useRef(null);
@@ -22,6 +20,8 @@ const MapPointing = () => {
   const [selectedPoints, setSelectedPoints] = useState([]);
 
   const activeItems = JSON.parse(localStorage.getItem("dataPoints")) || [];
+  const dataLocation = JSON.parse(localStorage.getItem("dataLocation")) || {};
+  
 
   const extractCoordinates = (data) => {
     return data
@@ -30,34 +30,12 @@ const MapPointing = () => {
       .reverse();
   };
 
-  const getLatLng = async (address) => {
-    const url = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(
-      address
-    )}&apiKey=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      if (
-        response.data &&
-        response.data.items &&
-        response.data.items.length > 0
-      ) {
-        const { lat, lng } = response.data.items[0].position;
-        return [lng, lat];
-      }
-    } catch (err) {
-      console.log("Đã xảy ra lỗi ", err);
-      return null;
-    }
-  };
-
-  const getLocations = async () => {
-    const locations = await Promise.all(
-      activeItems?.map(async (item) => {
-        console.log(item);
-        const coordinates = item?.latlng
-          ? extractCoordinates(item.latlng)
-          : await getLatLng(item.address);
+  const getLocations =  () => {
+    const locations = 
+      activeItems.map( (item) => {
+        const coordinates = 
+           extractCoordinates(item.latlng)
+          
         return {
           name: item.title,
           address: item.address,
@@ -69,13 +47,13 @@ const MapPointing = () => {
           coordinates,
         };
       })
-    );
+    
     return locations;
   };
 
   useEffect(() => {
-    const fetchLocations = async () => {
-      const locationData = await getLocations();
+    const fetchLocations = () => {
+      const locationData =  getLocations();
       setLocations(locationData);
     };
 
@@ -105,15 +83,17 @@ const MapPointing = () => {
     map.addControl(directions, "top-left");
 
     map.on("load", () => {
-      locations.forEach((location) => {
+      locations.forEach((location) => {       
+        const isHighlighted = dataLocation && (location.name === dataLocation.name || location.address === dataLocation.address)        
+
         const popup = new mapboxgl.Popup({ offset: 0 }).setHTML(
           `</p><div style="font-size: 14px; line-height: 1.5">
           <h3 style="margin: 0;">${location.name}</h3>
           <p><strong>Địa chỉ:</strong> ${location.address}</p>
-          <p><strong>Mô tả:</strong> ${location.description}</p>
-          <p><strong>Nhận xét:</strong> ${location.review}</p>
-          <p><strong>Đánh giá:</strong> ${location.rate}</p>
-          <p><strong>Điểm đến:</strong> ${location.type}</p>
+        ${location.description ? `<p><strong>Mô tả:</strong> ${location.description}</p>` : ""}
+        ${location.review ? `<p><strong>Nhận xét:</strong> ${location.review}</p>` : ""}
+        ${location.rate ? `<p><strong>Đánh giá:</strong> ${location.rate}</p>` : ""}
+        ${location.type ? `<p><strong>Điểm đến:</strong> ${location.type}</p>` : ""}
           ${
             location.link
               ? `<p><a href="${location.link}" target="_blank" style="color: #1E90FF;">Link</a></p>`
@@ -122,10 +102,18 @@ const MapPointing = () => {
         </div>`
         );
 
-        const marker = new mapboxgl.Marker()
+        const marker = new mapboxgl.Marker(
+          {
+            color: isHighlighted ? "#FF4500" : "#3FB1CE"
+          }
+        )
           .setLngLat(location.coordinates)
           .setPopup(popup)
           .addTo(map);
+
+          if (isHighlighted) {
+            marker.getElement().classList.add("highlighted-marker");
+          }
 
         marker.getElement().addEventListener("click", () => {
           setSelectedPoints((prev) => {
