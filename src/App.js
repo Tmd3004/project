@@ -11,16 +11,16 @@ const App = () => {
   return (
     <div className="wrapper">
       <div className="header">
-        <a href="/" className="home-link">
+        <a href="/travel" className="home-link">
           <FontAwesomeIcon icon={faHouse} className="home-btn" />
         </a>
         <span className="logo">Travel Maps</span>
       </div>
       <div className="body">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/map" element={<MapComponent />} />
-          <Route path="/map-point" element={<MapPointing />} />
+          <Route path="/travel" element={<Home />} />
+          <Route path="/travel/map" element={<MapComponent />} />
+          <Route path="/travel/map-point" element={<MapPointing />} />
         </Routes>
       </div>
     </div>

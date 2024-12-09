@@ -162,8 +162,6 @@ const Home = () => {
   const [isOpenFilterLocation, setIsOpenFilterLocation] = useState(false);
   const [isOpenFilterDistrict, setIsOpenFilterDistrict] = useState(false);
   const [sortHotel, setSortHotel] = useState("");
-  const [dataSortHotel, setDataSortHotel] = useState([]);
-  const [sortTravel, setSortTravel] = useState(false);
 
   const [data, setData] = useState([]);
 
@@ -180,7 +178,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("/data.json")
+      .get("/travel/data.json")
       .then((response) => {
         setData(response.data);
       })
@@ -252,7 +250,7 @@ const Home = () => {
     setIsSubmit(true);
 
     localStorage.setItem("dataPoints", JSON.stringify(nearbyPlaces));
-    window.open("/map-point", "_blank");
+    window.open("/travel/map-point", "_blank");
   };
 
   const handleChangeDistrict = () => {
@@ -289,9 +287,16 @@ const Home = () => {
     localStorage.setItem("dataPoints", JSON.stringify(searchData));
 
     if (searchData.length > 0) {
-      window.open("/map-point", "_blank");
+      window.open("/travel/map-point", "_blank");
     }
   };
+
+  const handleTop = () => {
+    const searchData = dataTravels.splice(0, 10);
+    localStorage.setItem("dataPoints", JSON.stringify(searchData));
+    localStorage.removeItem("dataLocation");
+    window.open("/travel/map-point", "_blank");
+  } 
 
   useEffect(() => {
     if (sortHotel) {
@@ -391,7 +396,7 @@ const Home = () => {
 
   const handleSearch = () => {
     localStorage.setItem("activeItem", JSON.stringify(activeItem));
-    window.open("/map", "_blank");
+    window.open("/travel/map", "_blank");
   };
 
   return (
@@ -650,7 +655,12 @@ const Home = () => {
       )}
 
       <div className={cx("location-list-display")}>
-        <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
+        <div className={cx("location-list-header")}>
+          <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
+          <button className={cx("btn-send")} onClick={handleTop}>
+            Top 10 địa điểm nên tới
+          </button>
+        </div>
         <Paginate
           npage={npageTravel}
           handlePageClick={handlePageTravelClick}

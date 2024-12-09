@@ -21,39 +21,37 @@ const MapPointing = () => {
 
   const activeItems = JSON.parse(localStorage.getItem("dataPoints")) || [];
   const dataLocation = JSON.parse(localStorage.getItem("dataLocation")) || {};
-  
+
+  if (dataLocation.length > 0 && !activeItems.some((item) => item.title === dataLocation.title)) {
+    activeItems.push(dataLocation);
+  }
 
   const extractCoordinates = (data) => {
-    return data
-      .split(",")
-      .map((coord) => parseFloat(coord.trim()))
-      .reverse();
+    return data?.split(",").map((coord) => parseFloat(coord.trim())).reverse();
   };
 
-  const getLocations =  () => {
-    const locations = 
-      activeItems.map( (item) => {
-        const coordinates = 
-           extractCoordinates(item.latlng)
-          
-        return {
-          name: item.title,
-          address: item.address,
-          description: item.describe,
-          review: item.overall_review,
-          rate: item.rate,
-          type: item.type,
-          link: item.link,
-          coordinates,
-        };
-      })
-    
+  const getLocations = () => {
+    const locations = activeItems.map((item) => {
+      const coordinates = extractCoordinates(item.latlng);
+
+      return {
+        name: item.title,
+        address: item.address,
+        description: item.describe,
+        review: item.overall_review,
+        rate: item.rate,
+        type: item.type,
+        link: item.link,
+        coordinates,
+      };
+    });
+
     return locations;
   };
 
   useEffect(() => {
     const fetchLocations = () => {
-      const locationData =  getLocations();
+      const locationData = getLocations();
       setLocations(locationData);
     };
 
@@ -83,17 +81,36 @@ const MapPointing = () => {
     map.addControl(directions, "top-left");
 
     map.on("load", () => {
-      locations.forEach((location) => {       
-        const isHighlighted = dataLocation && (location.name === dataLocation.name || location.address === dataLocation.address)        
+      locations.forEach((location) => {
+        const isHighlighted =
+          dataLocation &&
+          (location.name === dataLocation.name ||
+            location.address === dataLocation.address);
 
         const popup = new mapboxgl.Popup({ offset: 0 }).setHTML(
           `</p><div style="font-size: 14px; line-height: 1.5">
           <h3 style="margin: 0;">${location.name}</h3>
           <p><strong>Địa chỉ:</strong> ${location.address}</p>
-        ${location.description ? `<p><strong>Mô tả:</strong> ${location.description}</p>` : ""}
-        ${location.review ? `<p><strong>Nhận xét:</strong> ${location.review}</p>` : ""}
-        ${location.rate ? `<p><strong>Đánh giá:</strong> ${location.rate}</p>` : ""}
-        ${location.type ? `<p><strong>Điểm đến:</strong> ${location.type}</p>` : ""}
+        ${
+          location.description
+            ? `<p><strong>Mô tả:</strong> ${location.description}</p>`
+            : ""
+        }
+        ${
+          location.review
+            ? `<p><strong>Nhận xét:</strong> ${location.review}</p>`
+            : ""
+        }
+        ${
+          location.rate
+            ? `<p><strong>Đánh giá:</strong> ${location.rate}</p>`
+            : ""
+        }
+        ${
+          location.type
+            ? `<p><strong>Điểm đến:</strong> ${location.type}</p>`
+            : ""
+        }
           ${
             location.link
               ? `<p><a href="${location.link}" target="_blank" style="color: #1E90FF;">Link</a></p>`
@@ -102,18 +119,16 @@ const MapPointing = () => {
         </div>`
         );
 
-        const marker = new mapboxgl.Marker(
-          {
-            color: isHighlighted ? "#FF4500" : "#3FB1CE"
-          }
-        )
+        const marker = new mapboxgl.Marker({
+          color: isHighlighted ? "#FF4500" : "#3FB1CE",
+        })
           .setLngLat(location.coordinates)
           .setPopup(popup)
           .addTo(map);
 
-          if (isHighlighted) {
-            marker.getElement().classList.add("highlighted-marker");
-          }
+        if (isHighlighted) {
+          marker.getElement().classList.add("highlighted-marker");
+        }
 
         marker.getElement().addEventListener("click", () => {
           setSelectedPoints((prev) => {
