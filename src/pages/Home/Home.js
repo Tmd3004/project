@@ -143,6 +143,8 @@ const haversineDistance = (coord1, coord2) => {
 
 const Home = () => {
   const [dataHotels, setDataHotels] = useState([]);
+  const [dataRestaurants, setDataRestaurants] = useState([]);
+  const [dataTravels, setDataTravels] = useState([]);
 
   const [searchHotelValue, setSearchHotelValue] = useState([]);
   const [searchRestaurantValue, setSearchRestaurantValue] = useState([]);
@@ -215,10 +217,9 @@ const Home = () => {
 
   useEffect(() => {
     setDataHotels(data.filter((item) => item.type === "hotel"));
+    setDataRestaurants(data.filter((item) => item.type === "restaurant"));
+    setDataTravels(data.filter((item) => item.type === "travel"));
   }, [data]);
-
-  var dataRestaurants = data.filter((item) => item.type === "restaurant");
-  var dataTravels = data.filter((item) => item.type === "travel");
 
   const handleChangeLocation = () => {
     const nearbyPlaces = data.filter((place) => {
@@ -293,10 +294,10 @@ const Home = () => {
 
   const handleTop = () => {
     const searchData = dataTravels.splice(0, 10);
+    setDataTravels(searchData);
     localStorage.setItem("dataPoints", JSON.stringify(searchData));
-    localStorage.removeItem("dataLocation");
-    window.open("/travel/map-point", "_blank");
-  } 
+    window.open("/travel/map-trending", "_blank");
+  };
 
   useEffect(() => {
     if (sortHotel) {

@@ -4,14 +4,14 @@ import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-direct
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import classNames from "classnames/bind";
-import Styles from "./MapPointing.module.scss";
+import Styles from "./MapTrending.module.scss";
 
 const cx = classNames.bind(Styles);
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoidG1kdWMiLCJhIjoiY20zOHdxbGV0MHB4cDJsczU0cGRmNTNxbCJ9.oZhLOU3RCPxrC5md6PgIuA";
 
-const MapPointing = () => {
+const MapTrending = () => {
   const mapContainerRef = useRef(null);
   const [lng, setLng] = useState(108.2203);
   const [lat, setLat] = useState(16.0471);
@@ -20,12 +20,8 @@ const MapPointing = () => {
   const [selectedPoints, setSelectedPoints] = useState([]);
 
   const activeItems = JSON.parse(localStorage.getItem("dataPoints")) || [];
-  const dataLocation = JSON.parse(localStorage.getItem("dataLocation")) || {};
 
-  if (!activeItems.some((item) => item.title === dataLocation.title)) {
-    activeItems.push(dataLocation);
-  }
-
+  
   const extractCoordinates = (data) => {
     return data?.split(",").map((coord) => parseFloat(coord.trim())).reverse();
   };
@@ -82,10 +78,7 @@ const MapPointing = () => {
 
     map.on("load", () => {
       locations.forEach((location) => {
-        const isHighlighted =
-          dataLocation &&
-          (location.name === dataLocation.name ||
-            location.address === dataLocation.address);
+        
 
         const popup = new mapboxgl.Popup({ offset: 0 }).setHTML(
           `</p><div style="font-size: 14px; line-height: 1.5">
@@ -120,15 +113,13 @@ const MapPointing = () => {
         );
 
         const marker = new mapboxgl.Marker({
-          color: isHighlighted ? "#FF4500" : "#3FB1CE",
+          
         })
           .setLngLat(location.coordinates)
           .setPopup(popup)
           .addTo(map);
 
-        if (isHighlighted) {
-          marker.getElement().classList.add("highlighted-marker");
-        }
+        
 
         marker.getElement().addEventListener("click", () => {
           setSelectedPoints((prev) => {
@@ -168,4 +159,4 @@ const MapPointing = () => {
   );
 };
 
-export default MapPointing;
+export default MapTrending;
