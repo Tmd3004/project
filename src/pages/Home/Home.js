@@ -29,6 +29,19 @@ const locations = [
   "Khác",
 ];
 
+const top10travels = [
+  "Sun World Bà Nà Hills",
+  "Phố cổ Hội An",
+  "Công Viên Châu Á Đà Nẵng",
+  "Công Viên Suối Khoáng Nóng Núi Thần Tài",
+  "Chùa Linh Ứng",
+  "Bãi biển Mỹ Khê",
+  "Thánh địa Mỹ Sơn",
+  "Cầu Rồng",
+  "Cù lao Chàm",
+  "Cầu khóa tình yêu",
+];
+
 const sortHotels = ["Tăng dần", "Giảm dần"];
 
 const apiUrl = "http://localhost:8000/api/destinations/get_data";
@@ -293,7 +306,11 @@ const Home = () => {
   };
 
   const handleTop = () => {
-    const searchData = dataTravels.splice(0, 10);
+    const searchData = dataTravels.filter((item) =>
+      top10travels.some(
+        (travel) => travel.toLowerCase() === item.title.toLowerCase()
+      )
+    );
     setDataTravels(searchData);
     localStorage.setItem("dataPoints", JSON.stringify(searchData));
     window.open("/travel/map-trending", "_blank");
@@ -496,7 +513,7 @@ const Home = () => {
         <div className={cx("location-list-header")}>
           <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
           <button className={cx("btn-highlight")} onClick={handleTop}>
-            Top 10 địa điểm không thể bỏ qua khi đến Đà Nẵng
+            Top 10 địa điểm du lịch không thể bỏ qua
           </button>
         </div>
         <Paginate
