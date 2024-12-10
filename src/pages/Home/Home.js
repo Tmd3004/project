@@ -494,6 +494,80 @@ const Home = () => {
 
       <div className={cx("location-list-display")}>
         <div className={cx("location-list-header")}>
+          <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
+          <button className={cx("btn-highlight")} onClick={handleTop}>
+            Top 10 địa điểm nên tới
+          </button>
+        </div>
+        <Paginate
+          npage={npageTravel}
+          handlePageClick={handlePageTravelClick}
+          currentPage={currentTravelPage}
+        />
+      </div>
+      {recordsTravel.length > 0 ? (
+        <div className={cx("location-list")}>
+          {recordsTravel.map((item, index) => (
+            <div
+              className={cx(
+                "location-item",
+                activeItem.some((active) => active.title === item.title)
+                  ? "active-item"
+                  : ""
+              )}
+              key={index}
+            >
+              <div className={cx("location-item-body")}>
+                <div className={cx("location-item-header")}>
+                  <span className={cx("location-item-name")}>{item.title}</span>
+                </div>
+                <span className={cx("location-item-title")}>Địa chỉ: </span>
+                <span className={cx("location-item-content")}>
+                  {item.address}
+                </span>
+                <div className={cx("location-item-desc")}>
+                  <span className={cx("location-item-title")}>Mô tả: </span>
+                  <span className={cx("location-item-content")}>
+                    {item.describe}
+                  </span>
+                  <div className={cx("location-item-review")}>
+                    <span className={cx("location-item-title")}>Link: </span>
+                    <Link
+                      to={item.link}
+                      className={cx("location-item-content-item")}
+                      target="_blank"
+                    >
+                      <IoLink className={cx("link-icon")} />
+                    </Link>
+                  </div>
+
+                  <div className={cx("location-footer")}>
+                    <button
+                      className={cx("location-detail-btn")}
+                      onClick={() => handleShowDetail(item)}
+                    >
+                      Chi tiết
+                    </button>
+                    <button
+                      className={cx("location-choose-btn")}
+                      onClick={() => handleActiveItem(item)}
+                    >
+                      Chọn
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span className={cx("notify")}>
+          Không có địa chỉ nằm trong khu vực tìm kiếm
+        </span>
+      )}
+
+      <div className={cx("location-list-display")}>
+        <div className={cx("location-list-header")}>
           <span className={cx("location-list-title")}>Khách sạn</span>
           <CustomSelect
             options={sortHotels}
@@ -507,7 +581,7 @@ const Home = () => {
           currentPage={currentHotelPage}
         />
       </div>
-      {data.length > 0 ? (
+      {recordsHotel.length > 0 ? (
         <div className={cx("location-list")}>
           {recordsHotel.map((item, index) => (
             <div
@@ -619,80 +693,6 @@ const Home = () => {
                     ""
                   )}
 
-                  <div className={cx("location-item-review")}>
-                    <span className={cx("location-item-title")}>Link: </span>
-                    <Link
-                      to={item.link}
-                      className={cx("location-item-content-item")}
-                      target="_blank"
-                    >
-                      <IoLink className={cx("link-icon")} />
-                    </Link>
-                  </div>
-
-                  <div className={cx("location-footer")}>
-                    <button
-                      className={cx("location-detail-btn")}
-                      onClick={() => handleShowDetail(item)}
-                    >
-                      Chi tiết
-                    </button>
-                    <button
-                      className={cx("location-choose-btn")}
-                      onClick={() => handleActiveItem(item)}
-                    >
-                      Chọn
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <span className={cx("notify")}>
-          Không có địa chỉ nằm trong khu vực tìm kiếm
-        </span>
-      )}
-
-      <div className={cx("location-list-display")}>
-        <div className={cx("location-list-header")}>
-          <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
-          <button className={cx("btn-send")} onClick={handleTop}>
-            Top 10 địa điểm nên tới
-          </button>
-        </div>
-        <Paginate
-          npage={npageTravel}
-          handlePageClick={handlePageTravelClick}
-          currentPage={currentTravelPage}
-        />
-      </div>
-      {recordsTravel.length > 0 ? (
-        <div className={cx("location-list")}>
-          {recordsTravel.map((item, index) => (
-            <div
-              className={cx(
-                "location-item",
-                activeItem.some((active) => active.title === item.title)
-                  ? "active-item"
-                  : ""
-              )}
-              key={index}
-            >
-              <div className={cx("location-item-body")}>
-                <div className={cx("location-item-header")}>
-                  <span className={cx("location-item-name")}>{item.title}</span>
-                </div>
-                <span className={cx("location-item-title")}>Địa chỉ: </span>
-                <span className={cx("location-item-content")}>
-                  {item.address}
-                </span>
-                <div className={cx("location-item-desc")}>
-                  <span className={cx("location-item-title")}>Mô tả: </span>
-                  <span className={cx("location-item-content")}>
-                    {item.describe}
-                  </span>
                   <div className={cx("location-item-review")}>
                     <span className={cx("location-item-title")}>Link: </span>
                     <Link
