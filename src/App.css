@@ -4,13 +4,12 @@
 
 .header {
     width: 100vw;
-    background-color: #add8e6;
+    background-color: #e2b686;
     color: #fff;
     padding: 1.8rem 4rem;
     display: flex;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
 }
 
 .home-link {
