@@ -21,9 +21,7 @@ const MapPointing = () => {
 
   const activeItems = JSON.parse(localStorage.getItem("dataPoints")) || [];
   const dataLocation = JSON.parse(localStorage.getItem("dataLocation")) || {};
-
-  console.log(activeItems);
-
+  
   if (!activeItems.some((item) => item.title === dataLocation.title)) {
     activeItems.push(dataLocation);
   }

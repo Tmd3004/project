@@ -288,7 +288,7 @@ const Home = () => {
     localStorage.setItem("dataPoints", JSON.stringify(searchData));
 
     if (searchData.length > 0) {
-      window.open("/travel/map-point", "_blank");
+      window.open("/travel/map-point-district", "_blank");
     }
   };
 

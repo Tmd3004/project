@@ -4,14 +4,14 @@ import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-direct
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import classNames from "classnames/bind";
-import Styles from "./MapTrending.module.scss";
+import Styles from "./MapPointingDistrict.module.scss";
 
 const cx = classNames.bind(Styles);
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoidG1kdWMiLCJhIjoiY20zOHdxbGV0MHB4cDJsczU0cGRmNTNxbCJ9.oZhLOU3RCPxrC5md6PgIuA";
 
-const MapTrending = () => {
+const MapPointingDistrict = () => {
   const mapContainerRef = useRef(null);
   const [lng, setLng] = useState(108.2203);
   const [lat, setLat] = useState(16.0471);
@@ -155,4 +155,4 @@ const MapTrending = () => {
   );
 };
 
-export default MapTrending;
+export default MapPointingDistrict;
