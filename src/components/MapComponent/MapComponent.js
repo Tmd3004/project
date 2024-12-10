@@ -76,7 +76,7 @@ const MapComponent = () => {
     map.addControl(directions, "top-left");
 
     map.on("load", () => {
-      locations.forEach((location) => {
+      locations.forEach((location, index) => {
         const popup = new mapboxgl.Popup({ offset: 0 }).setHTML(
           `</p><div style="font-size: 14px; line-height: 1.5">
           <h3 style="margin: 0;">${location.name}</h3>
@@ -110,9 +110,16 @@ const MapComponent = () => {
         );
 
         new mapboxgl.Marker()
-          .setLngLat(location.coordinates)
-          .setPopup(new mapboxgl.Popup().setText(location.name))
-          .addTo(map);
+        .setLngLat(location.coordinates)
+        .setPopup(popup)
+        .addTo(map);
+
+      if (index === 0) {
+        directions.setOrigin(location.coordinates); 
+        directions.setDestination(location.coordinates); 
+      } else {
+        directions.addWaypoint(index - 1, location.coordinates); 
+      }
       });
     });
 
