@@ -402,10 +402,6 @@ const Home = () => {
 
   return (
     <div className={cx("wrapper")}>
-      <h3 className={cx("body-title")}>
-        Gợi ý các địa điểm bạn có thể lựa chọn
-      </h3>
-
       <div className={cx("filter")}>
         {isOpenFilterLocation ? (
           <div className={cx("select")}>
@@ -458,7 +454,7 @@ const Home = () => {
               setIsOpenFilterDistrict(false);
             }}
           >
-            Tìm kiếm theo địa điểm
+            Địa điểm bạn muốn đến
           </button>
         )}
         {isOpenFilterDistrict ? (
@@ -487,16 +483,20 @@ const Home = () => {
               setIsOpenFilterDistrict(true);
             }}
           >
-            Tìm kiếm theo quận
+            Quận bạn muốn đến
           </button>
         )}
       </div>
+
+      <h3 className={cx("body-title")}>
+        Gợi ý các địa điểm bạn có thể lựa chọn
+      </h3>
 
       <div className={cx("location-list-display")}>
         <div className={cx("location-list-header")}>
           <span className={cx("location-list-title")}>Địa điểm vui chơi</span>
           <button className={cx("btn-highlight")} onClick={handleTop}>
-            Top 10 địa điểm nên tới
+            Top 10 địa điểm không thể bỏ qua khi đến Đà Nẵng
           </button>
         </div>
         <Paginate

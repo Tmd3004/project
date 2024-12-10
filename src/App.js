@@ -15,7 +15,7 @@ const App = () => {
         <a href="/travel" className="home-link">
           <FontAwesomeIcon icon={faHouse} className="home-btn" />
         </a>
-        <span className="logo">Travel Maps</span>
+        <span className="logo">Bản đồ du lịch Thành phố Đà Nẵng</span>
       </div>
       <div className="body">
         <Routes>
