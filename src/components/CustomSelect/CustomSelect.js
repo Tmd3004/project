@@ -5,7 +5,7 @@ import { IoChevronDown } from "react-icons/io5";
 
 const cx = classNames.bind(Styles);
 
-const CustomSelect = ({ options, onChange, placeHolder }) => {
+const CustomSelect = ({ options, onChange, placeHolder, change }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const selectRef = useRef(null);
@@ -25,23 +25,17 @@ const CustomSelect = ({ options, onChange, placeHolder }) => {
   };
 
   useEffect(() => {
+    if (change === 0 || change === "") {
+      setSelectedOption(null);
+    }
+  }, [change]);
+
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const optionsData = [
-    ...new Set(
-      options.map((item) =>
-        item === "NON_VIOLATION"
-          ? "No Detectada"
-          : item === "VIOLATION"
-          ? "Detectada"
-          : item
-      )
-    ),
-  ];
 
   return (
     <div className={cx("custom-select-wrapper")} ref={selectRef}>
@@ -51,7 +45,7 @@ const CustomSelect = ({ options, onChange, placeHolder }) => {
       <IoChevronDown className={cx("down-icon")} onClick={toggleDropdown} />
       {isOpen && (
         <div className={cx("custom-options")}>
-          {optionsData.map((option) => (
+          {options.map((option) => (
             <div
               key={option}
               className={cx("custom-option")}

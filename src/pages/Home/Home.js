@@ -10,12 +10,13 @@ import { Link } from "react-router-dom";
 import { IoLink } from "react-icons/io5";
 import axios from "axios";
 import { AiFillFire } from "react-icons/ai";
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 
 const cx = classNames.bind(Styles);
 
 const radiuses = [100, 500, 1000, 2000];
 
-const types = ["Khách sạn", "Điểm ăn uống", "Điểm du lịch", "Tất cả"];
+const types = ["hotel", "restaurant", "travel", "all"];
 
 const locations = [
   "Hải Châu",
@@ -171,8 +172,8 @@ const Home = () => {
   const [location, setLocation] = useState("");
   const [locationsSearch, setLocationSearch] = useState([]);
   const [locationOrigin, setLocationOrigin] = useState({ lat: 0, lng: 0 });
-  const [radius, setRadius] = useState(100);
-  const [type, setType] = useState("");
+  const [radius, setRadius] = useState(0);
+  const [type, setType] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenFilterLocation, setIsOpenFilterLocation] = useState(false);
   const [isOpenFilterDistrict, setIsOpenFilterDistrict] = useState(false);
@@ -213,6 +214,9 @@ const Home = () => {
       setIsOpen(true);
     } else {
       setSearchValue("");
+      setRadius(0);
+      setType([]);
+      setLocation("");
       setIsSubmit(false);
       setIsOpen(false);
     }
@@ -241,13 +245,7 @@ const Home = () => {
       const distance = haversineDistance(locationOrigin, { lat, lng });
 
       const typeFilter =
-        type === "Khách sạn"
-          ? place.type.includes("hotel")
-          : type === "Điểm ăn uống"
-          ? place.type.includes("restaurant")
-          : type === "Điểm du lịch"
-          ? place.type.includes("travel")
-          : "all";
+        type.length === 0 || type.some((item) => place.type.includes(item));
 
       return distance <= radius && typeFilter;
     });
@@ -278,12 +276,8 @@ const Home = () => {
           ? "all"
           : item.address.includes(location);
       const typeFilter =
-        type === "Khách sạn"
-          ? item.type.includes("hotel")
-          : type === "Điểm ăn uống"
-          ? item.type.includes("restaurant")
-          : type === "Điểm du lịch"
-          ? item.type.includes("travel")
+        type.length > 0
+          ? type.some((value) => item.type.includes(value))
           : "all";
       return locationFilter && typeFilter;
     });
@@ -452,12 +446,14 @@ const Home = () => {
               options={radiuses}
               onChange={(option) => setRadius(option)}
               placeHolder="Bán kính"
+              change={radius}
             />
             <span className={cx("select-title")}>Loại hình</span>
-            <CustomSelect
+            <CustomDropdown
               options={types}
-              onChange={(option) => setType(option)}
+              onChange={(selected) => setType(selected)}
               placeHolder="Loại hình"
+              change={type}
             />
             <button className={cx("btn-search")} onClick={handleChangeLocation}>
               Tìm kiếm
@@ -469,6 +465,7 @@ const Home = () => {
             onClick={() => {
               setIsOpenFilterLocation(true);
               setIsOpenFilterDistrict(false);
+              setType([]);
             }}
           >
             Địa điểm bạn muốn đến
@@ -481,12 +478,14 @@ const Home = () => {
               options={locations}
               onChange={(option) => setLocation(option)}
               placeHolder="Quận/huyện"
+              change={location}
             />
             <span className={cx("select-title")}>Loại hình</span>
-            <CustomSelect
+            <CustomDropdown
               options={types}
-              onChange={(option) => setType(option)}
+              onChange={(selected) => setType(selected)}
               placeHolder="Loại hình"
+              change={type}
             />
             <button className={cx("btn-search")} onClick={handleChangeDistrict}>
               Tìm kiếm
@@ -498,6 +497,7 @@ const Home = () => {
             onClick={() => {
               setIsOpenFilterLocation(false);
               setIsOpenFilterDistrict(true);
+              setType([]);
             }}
           >
             Quận bạn muốn đến
